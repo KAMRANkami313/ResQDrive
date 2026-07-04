@@ -27,7 +27,7 @@ export default ({ config }: ConfigContext) => ({
   },
   android: {
     adaptiveIcon: {
-      foregroundImage: './assets/android-icon-foreground.png',
+      foregroundImage: './assets/adaptive-icon.png',
       backgroundColor: '#0F4C81',
     },
     package: 'com.resqdrive.app',
@@ -44,6 +44,10 @@ export default ({ config }: ConfigContext) => ({
       'android.permission.READ_CONTACTS',
     ],
   },
+  plugins: [
+    'expo-secure-store',
+    'expo-font',
+  ],
   extra: {
     eas: {
       projectId: '',
