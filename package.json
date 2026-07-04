@@ -1,0 +1,17 @@
+{
+  "name": "resqdrive",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Intelligent Auto-Collision Detection and Real-Time Post-Accident Assistance Platform",
+  "scripts": {
+    "mobile": "cd mobile && npm start",
+    "mobile:android": "cd mobile && npm run android",
+    "mobile:ios": "cd mobile && npm run ios",
+    "web": "cd web && npm run dev",
+    "ai:crash": "cd ai-service/crash_sound && uvicorn app.main:app --reload --port 8001",
+    "ai:damage": "cd ai-service/damage_assessment && uvicorn app.main:app --reload --port 8002",
+    "ai:repair": "cd ai-service/repair_cost && uvicorn app.main:app --reload --port 8003",
+    "iot:sim": "python iot/simulator/simulator.py"
+  },
+  "license": "MIT"
+}
