@@ -1,16 +1,19 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { MainStackParamList } from './types';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { TabParamList, MainStackParamList } from './types';
 import { HomeScreen } from '@screens/home/HomeScreen';
 import { ProfileScreen } from '@screens/profile/ProfileScreen';
 import { VehiclesScreen } from '@screens/vehicle/VehiclesScreen';
 import { ContactsScreen } from '@screens/contacts/ContactsScreen';
 import { IncidentHistoryScreen } from '@screens/incident/IncidentHistoryScreen';
+import { IoTDebugScreen } from '@screens/dev/IoTDebugScreen';
 import { useAppTheme } from '@theme/ThemeContext';
 import { Home, Car, Phone, FileText, User } from 'lucide-react-native';
 
-const Tab = createBottomTabNavigator<MainStackParamList>();
+const Tab = createBottomTabNavigator<TabParamList>();
+const Stack = createNativeStackNavigator<MainStackParamList>();
 
-export function MainStack() {
+function TabNavigator() {
   const theme = useAppTheme();
 
   return (
@@ -88,5 +91,38 @@ export function MainStack() {
         }}
       />
     </Tab.Navigator>
+  );
+}
+
+export function MainStack() {
+  const theme = useAppTheme();
+
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: theme.colors.surface },
+        headerTintColor: theme.colors.textPrimary,
+        headerTitleStyle: {
+          fontWeight: theme.typography.fontWeight.semibold,
+          fontSize: theme.typography.fontSize.lg,
+        },
+        headerShadowVisible: false,
+        contentStyle: { backgroundColor: theme.colors.background },
+      }}
+    >
+      <Stack.Screen
+        name="Home"
+        component={TabNavigator}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="IoTDebug"
+        component={IoTDebugScreen}
+        options={{
+          title: 'IoT Debug Panel',
+          headerBackTitle: 'Back',
+        }}
+      />
+    </Stack.Navigator>
   );
 }

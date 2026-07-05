@@ -1,4 +1,5 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 
 export type AuthStackParamList = {
   Login: undefined;
@@ -6,12 +7,16 @@ export type AuthStackParamList = {
   ForgotPassword: undefined;
 };
 
-export type MainStackParamList = {
+export type TabParamList = {
   Home: undefined;
   Vehicles: undefined;
   Contacts: undefined;
   IncidentHistory: undefined;
   Profile: undefined;
+};
+
+export type MainStackParamList = TabParamList & {
+  IoTDebug: undefined;
 };
 
 export type RootStackParamList = {
@@ -26,5 +31,10 @@ export type AuthScreenProps<Screen extends keyof AuthStackParamList> = NativeSta
 
 export type MainScreenProps<Screen extends keyof MainStackParamList> = NativeStackScreenProps<
   MainStackParamList,
+  Screen
+>;
+
+export type TabScreenProps<Screen extends keyof TabParamList> = BottomTabScreenProps<
+  TabParamList,
   Screen
 >;

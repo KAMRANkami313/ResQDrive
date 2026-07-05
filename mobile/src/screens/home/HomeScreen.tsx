@@ -2,17 +2,29 @@ import { View, StyleSheet, ScrollView } from 'react-native';
 import { Screen, Text, Card, Button } from '@components/ui';
 import { useAppTheme } from '@theme/ThemeContext';
 import { useAuth } from '@hooks/useAuth';
-import { Shield, Car, Phone, FileText, ChevronRight, CircleCheck } from 'lucide-react-native';
+import { useIoTStatus } from '@hooks/useIoT';
+import { MainScreenProps } from '@nav/types';
+import { Shield, Car, Phone, FileText, ChevronRight, CircleCheck, Activity, Wifi, WifiOff } from 'lucide-react-native';
 
-export function HomeScreen() {
+export function HomeScreen({ navigation }: MainScreenProps<'Home'>) {
   const theme = useAppTheme();
   const { user } = useAuth();
+  const iotStatus = useIoTStatus();
 
   const menuItems = [
     { id: 'vehicles', label: 'My Vehicles', icon: Car, color: theme.colors.primary },
     { id: 'contacts', label: 'Emergency Contacts', icon: Phone, color: theme.colors.emergency },
     { id: 'incidents', label: 'Incident History', icon: FileText, color: theme.colors.warning },
   ];
+
+  const iotColor =
+    iotStatus.connection === 'connected'
+      ? theme.colors.success
+      : iotStatus.connection === 'error'
+      ? theme.colors.emergency
+      : theme.colors.textTertiary;
+
+  const IotIcon = iotStatus.connection === 'connected' ? Wifi : WifiOff;
 
   return (
     <Screen>
@@ -36,6 +48,32 @@ export function HomeScreen() {
           variant="primary"
           style={styles.cta}
         />
+
+        <Card padding="md" elevation="sm" style={styles.statusCard}>
+          <View style={styles.statusHeader}>
+            <IotIcon size={18} color={iotColor} />
+            <Text variant="label" color="secondary" style={styles.statusLabel}>
+              IoT SIMULATOR · {iotStatus.connection.toUpperCase()}
+            </Text>
+          </View>
+          <Text variant="body" weight="medium">
+            {iotStatus.connection === 'connected'
+              ? 'Receiving live sensor data'
+              : iotStatus.connection === 'connecting'
+              ? 'Connecting...'
+              : iotStatus.connection === 'error'
+              ? 'Connection error — tap to retry'
+              : 'Not connected to simulator'}
+          </Text>
+          <Button
+            label="Open IoT Debug Panel"
+            variant="outline"
+            size="sm"
+            onPress={() => navigation.navigate('IoTDebug')}
+            leftIcon={<Activity size={16} color={theme.colors.primary} />}
+            style={styles.debugButton}
+          />
+        </Card>
 
         <View style={styles.section}>
           <Text variant="title" weight="semibold" style={styles.sectionTitle}>
@@ -98,10 +136,10 @@ const styles = StyleSheet.create({
   },
   cta: {
     marginTop: 8,
-    marginBottom: 24,
+    marginBottom: 16,
   },
   section: {
-    marginBottom: 24,
+    marginBottom: 16,
     gap: 8,
   },
   sectionTitle: {
@@ -126,7 +164,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   statusCard: {
-    marginBottom: 24,
+    marginBottom: 16,
+  },
+  statusHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  statusLabel: {
+    marginLeft: 8,
+  },
+  debugButton: {
+    marginTop: 12,
   },
   statusRow: {
     flexDirection: 'row',

@@ -1,4 +1,5 @@
-import { View, StyleSheet, Alert } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { confirmDialog } from '@utils/confirm';
 import { Screen, Text, Card, Button } from '@components/ui';
 import { useAppTheme } from '@theme/ThemeContext';
 import { useAuth } from '@hooks/useAuth';
@@ -11,23 +12,18 @@ export function ProfileScreen() {
   const { user } = useAuth();
   const clear = useAuthStore((s) => s.clear);
 
-  const handleLogout = () => {
-    Alert.alert(
-      'Sign Out',
-      'Are you sure you want to sign out?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Sign Out',
-          style: 'destructive',
-          onPress: async () => {
-            await authService.signOut();
-            clear();
-          },
-        },
-      ],
-    );
-  };
+const handleLogout = () => {
+  confirmDialog(
+    'Sign Out',
+    'Are you sure you want to sign out?',
+    async () => {
+      await authService.signOut();
+      clear();
+    },
+    'Sign Out',
+    'Cancel',
+  );
+};
 
   const infoItems = [
     { icon: Mail, label: 'Email', value: user?.email ?? '—' },
