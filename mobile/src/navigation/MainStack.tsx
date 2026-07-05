@@ -8,6 +8,7 @@ import { ContactsScreen } from '@screens/contacts/ContactsScreen';
 import { IncidentHistoryScreen } from '@screens/incident/IncidentHistoryScreen';
 import { IoTDebugScreen } from '@screens/dev/IoTDebugScreen';
 import { DetectionDebugScreen } from '@screens/dev/DetectionDebugScreen';
+import { CrashSoundDebugScreen } from '@screens/dev/CrashSoundDebugScreen';
 import { EditProfileScreen } from '@screens/profile/EditProfileScreen';
 import { ChangePasswordScreen } from '@screens/profile/ChangePasswordScreen';
 import { AccountSettingsScreen } from '@screens/profile/AccountSettingsScreen';
@@ -131,6 +132,11 @@ export function MainStack() {
         name="DetectionDebug"
         component={DetectionDebugScreen}
         options={{ title: 'Detection Engine', headerBackTitle: 'Back' }}
+      />
+            <Stack.Screen
+        name="CrashSoundDebug"
+        component={CrashSoundDebugScreen}
+        options={{ title: 'Crash Sound AI', headerBackTitle: 'Back' }}
       />
       <Stack.Screen
         name="EditProfile"

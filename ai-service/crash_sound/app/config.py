@@ -1,0 +1,11 @@
+import os
+
+SERVICE_NAME = "crash-sound-service"
+SERVICE_VERSION = "0.1.0"
+DEFAULT_PORT = int(os.environ.get("PORT", "8001"))
+CONFIDENCE_THRESHOLD = float(os.environ.get("CONFIDENCE_THRESHOLD", "0.6"))
+MAX_AUDIO_DURATION_SECONDS = 5
+SAMPLE_RATE = 16000
+N_FFT = 512
+HOP_LENGTH = 256
+N_MELS = 64

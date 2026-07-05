@@ -4,7 +4,7 @@ import { useAppTheme } from '@theme/ThemeContext';
 import { useAuth } from '@hooks/useAuth';
 import { useIoTStatus } from '@hooks/useIoT';
 import { HomeScreenProps } from '@nav/types';
-import { Shield, Car, Phone, FileText, ChevronRight, CircleCheck, Activity, Wifi, WifiOff, Gauge } from 'lucide-react-native';
+import { Shield, Car, Phone, FileText, ChevronRight, CircleCheck, Activity, Wifi, WifiOff, Gauge ,Mic} from 'lucide-react-native';
 
 export function HomeScreen({ navigation }: HomeScreenProps) {
   const theme = useAppTheme();
@@ -75,11 +75,19 @@ export function HomeScreen({ navigation }: HomeScreenProps) {
               style={styles.debugButton}
             />
             <Button
-              label="Detection Engine"
+              label="Detection"
               variant="outline"
               size="sm"
               onPress={() => navigation.navigate('DetectionDebug')}
               leftIcon={<Gauge size={16} color={theme.colors.primary} />}
+              style={styles.debugButton}
+            />
+            <Button
+              label="Crash AI"
+              variant="outline"
+              size="sm"
+              onPress={() => navigation.navigate('CrashSoundDebug')}
+              leftIcon={<Mic size={16} color={theme.colors.primary} />}
               style={styles.debugButton}
             />
           </View>
