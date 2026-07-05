@@ -10,6 +10,10 @@ export interface CrashSoundDetectionEvent {
   audioUri: string;
 }
 
+const TARGET_SAMPLE_RATE = 16000;
+const CHUNK_DURATION_MS = 2000;
+const ANALYSIS_INTERVAL_MS = 2000;
+
 const NATIVE_RECORDING_OPTIONS = {
   isMeteringEnabled: false,
   android: {
@@ -36,10 +40,6 @@ const NATIVE_RECORDING_OPTIONS = {
     bitsPerSecond: 256000,
   },
 } as const;
-
-const SAMPLE_RATE = 16000;
-const CHUNK_DURATION_MS = 2000;
-const ANALYSIS_INTERVAL_MS = 2000;
 
 function encodeWav(samples: Float32Array, sampleRate: number): Blob {
   const buffer = new ArrayBuffer(44 + samples.length * 2);
@@ -75,19 +75,57 @@ function encodeWav(samples: Float32Array, sampleRate: number): Blob {
   return new Blob([buffer], { type: 'audio/wav' });
 }
 
+function downsample(samples: Float32Array, fromRate: number, toRate: number): Float32Array {
+  if (fromRate === toRate) return samples;
+  if (toRate <= 0 || fromRate <= 0) return samples;
+  const ratio = fromRate / toRate;
+  if (ratio < 1) return samples;
+  const newLength = Math.floor(samples.length / ratio);
+  const result = new Float32Array(newLength);
+  for (let i = 0; i < newLength; i++) {
+    const startIdx = Math.floor(i * ratio);
+    const endIdx = Math.min(samples.length, Math.floor((i + 1) * ratio));
+    let sum = 0;
+    let count = 0;
+    for (let j = startIdx; j < endIdx; j++) {
+      sum += samples[j];
+      count++;
+    }
+    result[i] = count > 0 ? sum / count : 0;
+  }
+  return result;
+}
+
 class WebAudioRecorder {
   private audioContext: AudioContext | null = null;
   private mediaStream: MediaStream | null = null;
   private source: MediaStreamAudioSourceNode | null = null;
   private processor: ScriptProcessorNode | null = null;
+  private silentGain: GainNode | null = null;
   private chunks: Float32Array[] = [];
   private isRecording = false;
+  private actualSampleRate = TARGET_SAMPLE_RATE;
 
   async start(): Promise<void> {
     this.chunks = [];
-    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-    this.audioContext = new AudioCtx({ sampleRate: SAMPLE_RATE });
-    this.mediaStream = await navigator.mediaDevices.getUserMedia({
+
+    const AudioCtx = (window as any).AudioContext || (window as any).webkitAudioContext;
+    if (!AudioCtx) {
+      throw new Error('Web Audio API not supported in this browser');
+    }
+
+    const ctx: AudioContext = new AudioCtx();
+    this.actualSampleRate = ctx.sampleRate;
+
+    if (ctx.state === 'suspended') {
+      try {
+        await ctx.resume();
+      } catch (err) {
+        console.warn('[crash-sound] AudioContext resume failed:', err);
+      }
+    }
+
+    const stream = await navigator.mediaDevices.getUserMedia({
       audio: {
         channelCount: 1,
         echoCancellation: false,
@@ -95,30 +133,73 @@ class WebAudioRecorder {
         autoGainControl: false,
       },
     });
-    this.source = this.audioContext.createMediaStreamSource(this.mediaStream);
-    this.processor = this.audioContext.createScriptProcessor(4096, 1, 1);
-    this.processor.onaudioprocess = (e: AudioProcessingEvent) => {
+
+    const src = ctx.createMediaStreamSource(stream);
+    const bufferSize = 4096;
+    const proc = ctx.createScriptProcessor(bufferSize, 1, 1);
+    const gain = ctx.createGain();
+    gain.gain.value = 0;
+
+    proc.onaudioprocess = (e: AudioProcessingEvent) => {
       if (!this.isRecording) return;
       const input = e.inputBuffer.getChannelData(0);
       this.chunks.push(new Float32Array(input));
     };
-    this.source.connect(this.processor);
-    this.processor.connect(this.audioContext.destination);
+
+    src.connect(proc);
+    proc.connect(gain);
+    gain.connect(ctx.destination);
+
+    this.audioContext = ctx;
+    this.mediaStream = stream;
+    this.source = src;
+    this.processor = proc;
+    this.silentGain = gain;
+
     this.isRecording = true;
   }
 
   stopAndEncode(): Blob | null {
     this.isRecording = false;
+
+    const ctx = this.audioContext;
+    const stream = this.mediaStream;
+    const src = this.source;
+    const proc = this.processor;
+    const gain = this.silentGain;
+
+    this.audioContext = null;
+    this.mediaStream = null;
+    this.source = null;
+    this.processor = null;
+    this.silentGain = null;
+
     try {
-      this.processor?.disconnect();
-      this.source?.disconnect();
-      this.mediaStream?.getTracks().forEach((t) => t.stop());
-      this.audioContext?.close();
-    } catch {
-      // ignore
+      if (proc) {
+        proc.disconnect();
+        proc.onaudioprocess = null;
+      }
+      if (gain) {
+        gain.disconnect();
+      }
+      if (src) {
+        src.disconnect();
+      }
+      if (stream) {
+        stream.getTracks().forEach((t) => t.stop());
+      }
+      if (ctx) {
+        ctx.close().catch(() => {});
+      }
+    } catch (err) {
+      console.warn('[crash-sound] cleanup error:', err);
     }
 
-    if (this.chunks.length === 0) return null;
+    if (this.chunks.length === 0) {
+      console.warn('[crash-sound] no audio chunks captured');
+      return null;
+    }
+
     const totalLength = this.chunks.reduce((acc, c) => acc + c.length, 0);
     const samples = new Float32Array(totalLength);
     let offset = 0;
@@ -127,7 +208,10 @@ class WebAudioRecorder {
       offset += chunk.length;
     }
     this.chunks = [];
-    return encodeWav(samples, SAMPLE_RATE);
+
+    const downsampled = downsample(samples, this.actualSampleRate, TARGET_SAMPLE_RATE);
+
+    return encodeWav(downsampled, TARGET_SAMPLE_RATE);
   }
 
   isCurrentlyRecording(): boolean {
@@ -150,17 +234,23 @@ class CrashSoundDetectionService {
   async requestPermissions(): Promise<boolean> {
     if (Platform.OS === 'web') {
       try {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          console.error('[crash-sound] getUserMedia not available');
+          return false;
+        }
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         stream.getTracks().forEach((t) => t.stop());
         return true;
-      } catch {
+      } catch (err) {
+        console.error('[crash-sound] permission denied:', err);
         return false;
       }
     }
     try {
       const permission = await Audio.requestPermissionsAsync();
       return permission.granted;
-    } catch {
+    } catch (err) {
+      console.error('[crash-sound] native permission error:', err);
       return false;
     }
   }
@@ -190,7 +280,7 @@ class CrashSoundDetectionService {
       this.startMonitorLoop();
       return true;
     } catch (err) {
-      console.warn('[crash-sound] start failed:', err);
+      console.error('[crash-sound] start failed:', err);
       this.setStatus('error');
       return false;
     }
@@ -248,29 +338,45 @@ class CrashSoundDetectionService {
   }
 
   private startMonitorLoop() {
+    let isRunning = false;
+
     const run = async () => {
       if (!this.isMonitoring) return;
+      if (isRunning) return;
+
       const now = Date.now();
       if (now - this.lastAnalyzedAt < ANALYSIS_INTERVAL_MS) return;
       this.lastAnalyzedAt = now;
+      isRunning = true;
 
       try {
-        let audioUri: string | null = null;
+        const audioUri = '';
 
         if (Platform.OS === 'web') {
           if (!this.webRecorder || !this.webRecorder.isCurrentlyRecording()) {
+            if (this.webRecorder) {
+              this.webRecorder.stopAndEncode();
+            }
             this.webRecorder = new WebAudioRecorder();
             await this.webRecorder.start();
           }
+
           await new Promise((resolve) => setTimeout(resolve, CHUNK_DURATION_MS));
-          const blob = this.webRecorder.stopAndEncode();
+
+          const blob = this.webRecorder?.stopAndEncode() ?? null;
           this.webRecorder = null;
 
-          if (blob) {
+          if (blob && blob.size > 0) {
             this.setStatus('analyzing');
-            const result = await this.analyzeBlob(blob);
-            audioUri = '';
+            const result = await crashSoundService.analyzeBlob(blob);
             this.handleResult(result, audioUri);
+
+            if (this.isMonitoring) {
+              this.webRecorder = new WebAudioRecorder();
+              await this.webRecorder.start();
+            }
+          } else {
+            console.warn('[crash-sound] empty blob, retrying');
             if (this.isMonitoring) {
               this.webRecorder = new WebAudioRecorder();
               await this.webRecorder.start();
@@ -293,35 +399,38 @@ class CrashSoundDetectionService {
           await new Promise((resolve) => setTimeout(resolve, CHUNK_DURATION_MS));
 
           await this.recording.stopAndUnloadAsync();
-          audioUri = this.recording.getURI();
+          const uri = this.recording.getURI() || '';
           this.recording = null;
 
-          if (!audioUri) return;
+          if (!uri) {
+            isRunning = false;
+            return;
+          }
 
           this.setStatus('analyzing');
-          const result = await crashSoundService.analyze(audioUri);
-          this.handleResult(result, audioUri);
+          const result = await crashSoundService.analyze(uri);
+          this.handleResult(result, uri);
         }
 
         this.setStatus(this.isMonitoring ? 'recording' : 'stopped');
       } catch (err) {
-        console.warn('[crash-sound] monitor loop error:', err);
+        console.error('[crash-sound] monitor loop error:', err);
         this.setStatus('error');
+        try {
+          if (this.webRecorder) {
+            this.webRecorder.stopAndEncode();
+            this.webRecorder = null;
+          }
+        } catch {
+          // ignore
+        }
+      } finally {
+        isRunning = false;
       }
     };
 
     this.monitorLoop = setInterval(run, ANALYSIS_INTERVAL_MS);
     run();
-  }
-
-  private async analyzeBlob(blob: Blob): Promise<CrashSoundResult> {
-    const url = URL.createObjectURL(blob);
-    try {
-      const result = await crashSoundService.analyzeBlob(blob);
-      return result;
-    } finally {
-      URL.revokeObjectURL(url);
-    }
   }
 
   private handleResult(result: CrashSoundResult, audioUri: string) {
