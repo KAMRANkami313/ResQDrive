@@ -4,3 +4,4 @@ export { Input } from './Input';
 export { Card } from './Card';
 export { Screen } from './Screen';
 export { Spinner } from './Spinner';
+export { Avatar } from './Avatar';

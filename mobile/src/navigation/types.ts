@@ -19,6 +19,9 @@ export type TabParamList = {
 export type MainStackParamList = {
   MainTabs: undefined;
   IoTDebug: undefined;
+  EditProfile: undefined;
+  ChangePassword: undefined;
+  AccountSettings: undefined;
 };
 
 export type RootStackParamList = {
@@ -41,9 +44,14 @@ export type MainStackScreenProps<Screen extends keyof MainStackParamList> = Nati
   Screen
 >;
 
-export type HomeScreenProps = CompositeScreenProps<
-  TabScreenProps<'Home'>,
+export type TabScreenWithStackProps<Screen extends keyof TabParamList> = CompositeScreenProps<
+  TabScreenProps<Screen>,
   MainStackScreenProps<'MainTabs'>
 >;
 
+export type HomeScreenProps = TabScreenWithStackProps<'Home'>;
+export type ProfileScreenProps = TabScreenWithStackProps<'Profile'>;
 export type IoTDebugScreenProps = MainStackScreenProps<'IoTDebug'>;
+export type EditProfileScreenProps = MainStackScreenProps<'EditProfile'>;
+export type ChangePasswordScreenProps = MainStackScreenProps<'ChangePassword'>;
+export type AccountSettingsScreenProps = MainStackScreenProps<'AccountSettings'>;

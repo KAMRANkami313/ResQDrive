@@ -1,63 +1,84 @@
-import { View, StyleSheet } from 'react-native';
-import { confirmDialog } from '@utils/confirm';
-import { Screen, Text, Card, Button } from '@components/ui';
+import { View, StyleSheet, ScrollView } from 'react-native';
+import { Screen, Text, Card, Button, Avatar } from '@components/ui';
 import { useAppTheme } from '@theme/ThemeContext';
 import { useAuth } from '@hooks/useAuth';
 import { authService } from '@services/auth.service';
 import { useAuthStore } from '@stores/auth.store';
-import { User, Mail, Phone, LogOut, Shield } from 'lucide-react-native';
+import { confirmDialog } from '@utils/confirm';
+import { ProfileScreenProps } from '@nav/types';
+import { Mail, Phone, Shield, Droplet, AlertTriangle, IdCard, LogOut, ChevronRight, Settings, Lock, UserCog } from 'lucide-react-native';
 
-export function ProfileScreen() {
+export function ProfileScreen({ navigation }: ProfileScreenProps) {
   const theme = useAppTheme();
   const { user } = useAuth();
   const clear = useAuthStore((s) => s.clear);
 
-const handleLogout = () => {
-  confirmDialog(
-    'Sign Out',
-    'Are you sure you want to sign out?',
-    async () => {
-      await authService.signOut();
-      clear();
-    },
-    'Sign Out',
-    'Cancel',
-  );
-};
+  const handleLogout = () => {
+    confirmDialog(
+      'Sign Out',
+      'Are you sure you want to sign out?',
+      async () => {
+        await authService.signOut();
+        clear();
+      },
+      'Sign Out',
+      'Cancel',
+    );
+  };
 
-  const infoItems = [
+  const accountItems = [
     { icon: Mail, label: 'Email', value: user?.email ?? '—' },
-    { icon: Phone, label: 'Phone', value: user?.phone || '—' },
-    { icon: Shield, label: 'Role', value: (user?.role ?? 'driver').toUpperCase() },
+    { icon: Phone, label: 'Phone', value: user?.phone || 'Not set' },
+    { icon: IdCard, label: 'CNIC', value: user?.cnic || 'Not set' },
+    { icon: Droplet, label: 'Blood Group', value: user?.blood_group || 'Not set' },
+    { icon: AlertTriangle, label: 'Allergies', value: user?.allergies || 'None' },
   ];
 
+  const settingsItems = [
+    { icon: UserCog, label: 'Edit Profile', color: theme.colors.primary, onPress: () => navigation.navigate('EditProfile') },
+    { icon: Lock, label: 'Change Password', color: theme.colors.warning, onPress: () => navigation.navigate('ChangePassword') },
+    { icon: Settings, label: 'Account Settings', color: theme.colors.textSecondary, onPress: () => navigation.navigate('AccountSettings') },
+  ];
+
+  const roleColor = user?.role === 'admin' ? theme.colors.emergency : theme.colors.primary;
+
   return (
-    <Screen style={styles.screen}>
-      <View style={styles.container}>
+    <Screen>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>
-          <View style={[styles.avatar, { backgroundColor: theme.colors.primarySoft }]}>
-            <User size={32} color={theme.colors.primary} />
-          </View>
-          <Text variant="title" weight="bold" style={styles.name}>
+          <Avatar
+            uri={user?.avatar_url}
+            name={user?.full_name}
+            size="xl"
+            onPress={() => navigation.navigate('EditProfile')}
+            showEditBadge
+          />
+          <Text variant="heading" weight="bold" style={styles.name}>
             {user?.full_name || 'ResQDrive User'}
           </Text>
           <Text variant="body" color="secondary">
             {user?.email}
           </Text>
+          <View style={[styles.roleBadge, { backgroundColor: roleColor + '20' }]}>
+            <Shield size={12} color={roleColor} />
+            <Text variant="label" weight="bold" style={{ color: roleColor, marginLeft: 4 }}>
+              {(user?.role ?? 'driver').toUpperCase()}
+            </Text>
+          </View>
         </View>
 
-        <Card padding="lg" elevation="sm" style={styles.card}>
+        <Card padding="md" elevation="sm" style={styles.card}>
           <Text variant="label" color="secondary" style={styles.sectionTitle}>
             ACCOUNT DETAILS
           </Text>
-          {infoItems.map((item, idx) => {
+          {accountItems.map((item, idx) => {
             const Icon = item.icon;
             return (
               <View
                 key={item.label}
                 style={[
                   styles.infoRow,
-                  idx < infoItems.length - 1 && { borderBottomWidth: 1, borderBottomColor: theme.colors.border },
+                  idx < accountItems.length - 1 && { borderBottomWidth: 1, borderBottomColor: theme.colors.border },
                 ]}
               >
                 <View style={[styles.infoIcon, { backgroundColor: theme.colors.surfaceAlt }]}>
@@ -72,57 +93,84 @@ const handleLogout = () => {
           })}
         </Card>
 
+        <Card padding="none" elevation="sm" style={styles.card}>
+          {settingsItems.map((item, idx) => {
+            const Icon = item.icon;
+            return (
+              <View
+                key={item.label}
+                style={[
+                  styles.settingsRow,
+                  idx < settingsItems.length - 1 && { borderBottomWidth: 1, borderBottomColor: theme.colors.border },
+                ]}
+              >
+                <Button
+                  label={item.label}
+                  variant="ghost"
+                  size="md"
+                  fullWidth
+                  onPress={item.onPress}
+                  leftIcon={<Icon size={20} color={item.color} />}
+                  rightIcon={<ChevronRight size={20} color={theme.colors.textTertiary} />}
+                  style={styles.settingsButton}
+                />
+              </View>
+            );
+          })}
+        </Card>
+
         <Button
           label="Sign Out"
           variant="emergency"
           size="lg"
           fullWidth
           onPress={handleLogout}
-          leftIcon={<LogOut size={20} color="#FFFFFF" />}
+          leftIcon={<LogOut size={20} color={theme.colors.textOnEmergency} />}
           style={styles.logoutButton}
         />
 
         <Text variant="caption" color="tertiary" style={styles.versionText}>
-          ResQDrive v0.1.0 · Batch 0.2
+          ResQDrive v0.1.0 · Batch 1.1
         </Text>
-      </View>
+      </ScrollView>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
+  scrollContent: {
     padding: 24,
+    paddingBottom: 40,
   },
   header: {
     alignItems: 'center',
     marginBottom: 24,
   },
-  avatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 12,
-  },
   name: {
+    marginTop: 16,
     marginBottom: 4,
   },
+  roleBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginTop: 12,
+  },
   card: {
-    marginBottom: 24,
+    marginBottom: 16,
   },
   sectionTitle: {
-    marginBottom: 16,
+    marginBottom: 8,
+    paddingHorizontal: 8,
+    paddingTop: 8,
   },
   infoRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
   },
   infoIcon: {
     width: 36,
@@ -134,6 +182,12 @@ const styles = StyleSheet.create({
   },
   infoContent: {
     flex: 1,
+  },
+  settingsRow: {
+    paddingHorizontal: 4,
+  },
+  settingsButton: {
+    justifyContent: 'flex-start',
   },
   logoutButton: {
     marginBottom: 16,

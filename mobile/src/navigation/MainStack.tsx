@@ -7,6 +7,9 @@ import { VehiclesScreen } from '@screens/vehicle/VehiclesScreen';
 import { ContactsScreen } from '@screens/contacts/ContactsScreen';
 import { IncidentHistoryScreen } from '@screens/incident/IncidentHistoryScreen';
 import { IoTDebugScreen } from '@screens/dev/IoTDebugScreen';
+import { EditProfileScreen } from '@screens/profile/EditProfileScreen';
+import { ChangePasswordScreen } from '@screens/profile/ChangePasswordScreen';
+import { AccountSettingsScreen } from '@screens/profile/AccountSettingsScreen';
 import { useAppTheme } from '@theme/ThemeContext';
 import { Home, Car, Phone, FileText, User } from 'lucide-react-native';
 
@@ -118,10 +121,22 @@ export function MainStack() {
       <Stack.Screen
         name="IoTDebug"
         component={IoTDebugScreen}
-        options={{
-          title: 'IoT Debug Panel',
-          headerBackTitle: 'Back',
-        }}
+        options={{ title: 'IoT Debug Panel', headerBackTitle: 'Back' }}
+      />
+      <Stack.Screen
+        name="EditProfile"
+        component={EditProfileScreen}
+        options={{ title: 'Edit Profile', headerBackTitle: 'Back' }}
+      />
+      <Stack.Screen
+        name="ChangePassword"
+        component={ChangePasswordScreen}
+        options={{ title: 'Change Password', headerBackTitle: 'Back' }}
+      />
+      <Stack.Screen
+        name="AccountSettings"
+        component={AccountSettingsScreen}
+        options={{ title: 'Account Settings', headerBackTitle: 'Back' }}
       />
     </Stack.Navigator>
   );
