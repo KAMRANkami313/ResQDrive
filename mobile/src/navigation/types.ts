@@ -19,6 +19,7 @@ export type TabParamList = {
 export type MainStackParamList = {
   MainTabs: undefined;
   IoTDebug: undefined;
+  DetectionDebug: undefined;
   EditProfile: undefined;
   ChangePassword: undefined;
   AccountSettings: undefined;
@@ -57,6 +58,7 @@ export type ProfileScreenProps = TabScreenWithStackProps<'Profile'>;
 export type VehiclesScreenProps = TabScreenWithStackProps<'Vehicles'>;
 export type ContactsScreenProps = TabScreenWithStackProps<'Contacts'>;
 export type IoTDebugScreenProps = MainStackScreenProps<'IoTDebug'>;
+export type DetectionDebugScreenProps = MainStackScreenProps<'DetectionDebug'>;
 export type EditProfileScreenProps = MainStackScreenProps<'EditProfile'>;
 export type ChangePasswordScreenProps = MainStackScreenProps<'ChangePassword'>;
 export type AccountSettingsScreenProps = MainStackScreenProps<'AccountSettings'>;

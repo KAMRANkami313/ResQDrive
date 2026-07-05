@@ -1,10 +1,10 @@
 import { ReactNode } from 'react';
-import { View, ViewStyle, StyleSheet } from 'react-native';
+import { View, ViewStyle, StyleSheet, StyleProp } from 'react-native';
 import { useAppTheme } from '@theme/ThemeContext';
 
 interface CardProps {
   children: ReactNode;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   padding?: 'none' | 'sm' | 'md' | 'lg' | 'xl';
   elevation?: 'none' | 'sm' | 'md' | 'lg' | 'xl';
 }

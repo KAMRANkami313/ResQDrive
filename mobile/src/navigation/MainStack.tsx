@@ -7,6 +7,7 @@ import { VehiclesScreen } from '@screens/vehicle/VehiclesScreen';
 import { ContactsScreen } from '@screens/contacts/ContactsScreen';
 import { IncidentHistoryScreen } from '@screens/incident/IncidentHistoryScreen';
 import { IoTDebugScreen } from '@screens/dev/IoTDebugScreen';
+import { DetectionDebugScreen } from '@screens/dev/DetectionDebugScreen';
 import { EditProfileScreen } from '@screens/profile/EditProfileScreen';
 import { ChangePasswordScreen } from '@screens/profile/ChangePasswordScreen';
 import { AccountSettingsScreen } from '@screens/profile/AccountSettingsScreen';
@@ -125,6 +126,11 @@ export function MainStack() {
         name="IoTDebug"
         component={IoTDebugScreen}
         options={{ title: 'IoT Debug Panel', headerBackTitle: 'Back' }}
+      />
+      <Stack.Screen
+        name="DetectionDebug"
+        component={DetectionDebugScreen}
+        options={{ title: 'Detection Engine', headerBackTitle: 'Back' }}
       />
       <Stack.Screen
         name="EditProfile"

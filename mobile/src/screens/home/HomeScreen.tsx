@@ -4,7 +4,7 @@ import { useAppTheme } from '@theme/ThemeContext';
 import { useAuth } from '@hooks/useAuth';
 import { useIoTStatus } from '@hooks/useIoT';
 import { HomeScreenProps } from '@nav/types';
-import { Shield, Car, Phone, FileText, ChevronRight, CircleCheck, Activity, Wifi, WifiOff } from 'lucide-react-native';
+import { Shield, Car, Phone, FileText, ChevronRight, CircleCheck, Activity, Wifi, WifiOff, Gauge } from 'lucide-react-native';
 
 export function HomeScreen({ navigation }: HomeScreenProps) {
   const theme = useAppTheme();
@@ -65,14 +65,24 @@ export function HomeScreen({ navigation }: HomeScreenProps) {
               ? 'Connection error — tap to retry'
               : 'Not connected to simulator'}
           </Text>
-          <Button
-            label="Open IoT Debug Panel"
-            variant="outline"
-            size="sm"
-            onPress={() => navigation.navigate('IoTDebug')}
-            leftIcon={<Activity size={16} color={theme.colors.primary} />}
-            style={styles.debugButton}
-          />
+          <View style={styles.debugButtonRow}>
+            <Button
+              label="IoT Debug"
+              variant="outline"
+              size="sm"
+              onPress={() => navigation.navigate('IoTDebug')}
+              leftIcon={<Activity size={16} color={theme.colors.primary} />}
+              style={styles.debugButton}
+            />
+            <Button
+              label="Detection Engine"
+              variant="outline"
+              size="sm"
+              onPress={() => navigation.navigate('DetectionDebug')}
+              leftIcon={<Gauge size={16} color={theme.colors.primary} />}
+              style={styles.debugButton}
+            />
+          </View>
         </Card>
 
         <View style={styles.section}>
@@ -174,8 +184,13 @@ const styles = StyleSheet.create({
   statusLabel: {
     marginLeft: 8,
   },
-  debugButton: {
+  debugButtonRow: {
+    flexDirection: 'row',
+    gap: 8,
     marginTop: 12,
+  },
+  debugButton: {
+    flex: 1,
   },
   statusRow: {
     flexDirection: 'row',
