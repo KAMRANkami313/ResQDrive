@@ -8,11 +8,10 @@ export type AuthStackParamList = {
 
 export type MainStackParamList = {
   Home: undefined;
-  Profile: undefined;
   Vehicles: undefined;
   Contacts: undefined;
   IncidentHistory: undefined;
-  Settings: undefined;
+  Profile: undefined;
 };
 
 export type RootStackParamList = {

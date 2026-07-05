@@ -1,16 +1,20 @@
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MainStackParamList } from './types';
 import { HomeScreen } from '@screens/home/HomeScreen';
 import { ProfileScreen } from '@screens/profile/ProfileScreen';
+import { VehiclesScreen } from '@screens/vehicle/VehiclesScreen';
+import { ContactsScreen } from '@screens/contacts/ContactsScreen';
+import { IncidentHistoryScreen } from '@screens/incident/IncidentHistoryScreen';
 import { useAppTheme } from '@theme/ThemeContext';
+import { Home, Car, Phone, FileText, User } from 'lucide-react-native';
 
-const Stack = createNativeStackNavigator<MainStackParamList>();
+const Tab = createBottomTabNavigator<MainStackParamList>();
 
 export function MainStack() {
   const theme = useAppTheme();
 
   return (
-    <Stack.Navigator
+    <Tab.Navigator
       screenOptions={{
         headerStyle: { backgroundColor: theme.colors.surface },
         headerTintColor: theme.colors.textPrimary,
@@ -19,39 +23,70 @@ export function MainStack() {
           fontSize: theme.typography.fontSize.lg,
         },
         headerShadowVisible: false,
-        contentStyle: { backgroundColor: theme.colors.background },
+        tabBarActiveTintColor: theme.colors.primary,
+        tabBarInactiveTintColor: theme.colors.textTertiary,
+        tabBarStyle: {
+          backgroundColor: theme.colors.surface,
+          borderTopColor: theme.colors.border,
+          borderTopWidth: 1,
+          height: 60,
+          paddingBottom: 6,
+          paddingTop: 6,
+        },
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: theme.typography.fontWeight.medium,
+        },
+        tabBarItemStyle: {
+          paddingVertical: 4,
+        },
       }}
     >
-      <Stack.Screen
+      <Tab.Screen
         name="Home"
         component={HomeScreen}
-        options={{ title: 'ResQDrive' }}
+        options={{
+          title: 'ResQDrive',
+          tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
+          tabBarLabel: 'Home',
+        }}
       />
-      <Stack.Screen
+      <Tab.Screen
+        name="Vehicles"
+        component={VehiclesScreen}
+        options={{
+          title: 'My Vehicles',
+          tabBarIcon: ({ color, size }) => <Car size={size} color={color} />,
+          tabBarLabel: 'Vehicles',
+        }}
+      />
+      <Tab.Screen
+        name="Contacts"
+        component={ContactsScreen}
+        options={{
+          title: 'Emergency Contacts',
+          tabBarIcon: ({ color, size }) => <Phone size={size} color={color} />,
+          tabBarLabel: 'Contacts',
+        }}
+      />
+      <Tab.Screen
+        name="IncidentHistory"
+        component={IncidentHistoryScreen}
+        options={{
+          title: 'Incident History',
+          tabBarIcon: ({ color, size }) => <FileText size={size} color={color} />,
+          tabBarLabel: 'Incidents',
+        }}
+      />
+      <Tab.Screen
         name="Profile"
         component={ProfileScreen}
-        options={{ title: 'Profile' }}
+        options={{
+          title: 'Profile',
+          tabBarIcon: ({ color, size }) => <User size={size} color={color} />,
+          tabBarLabel: 'Profile',
+        }}
       />
-      <Stack.Screen
-        name="Vehicles"
-        component={ProfileScreen}
-        options={{ title: 'My Vehicles' }}
-      />
-      <Stack.Screen
-        name="Contacts"
-        component={ProfileScreen}
-        options={{ title: 'Emergency Contacts' }}
-      />
-      <Stack.Screen
-        name="IncidentHistory"
-        component={ProfileScreen}
-        options={{ title: 'Incident History' }}
-      />
-      <Stack.Screen
-        name="Settings"
-        component={ProfileScreen}
-        options={{ title: 'Settings' }}
-      />
-    </Stack.Navigator>
+    </Tab.Navigator>
   );
 }

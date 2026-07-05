@@ -1,10 +1,12 @@
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { Screen, Text, Card, Button } from '@components/ui';
 import { useAppTheme } from '@theme/ThemeContext';
-import { Shield, Car, Phone, FileText, ChevronRight } from 'lucide-react-native';
+import { useAuth } from '@hooks/useAuth';
+import { Shield, Car, Phone, FileText, ChevronRight, CircleCheck } from 'lucide-react-native';
 
 export function HomeScreen() {
   const theme = useAppTheme();
+  const { user } = useAuth();
 
   const menuItems = [
     { id: 'vehicles', label: 'My Vehicles', icon: Car, color: theme.colors.primary },
@@ -20,7 +22,7 @@ export function HomeScreen() {
             <Shield size={32} color={theme.colors.primary} />
           </View>
           <Text variant="title" weight="bold" style={styles.heroTitle}>
-            You're protected
+            Hi, {user?.full_name?.split(' ')[0] || 'Driver'}
           </Text>
           <Text variant="body" color="secondary">
             Driving mode is off. Tap below to start monitoring.
@@ -58,17 +60,15 @@ export function HomeScreen() {
         </View>
 
         <Card padding="md" elevation="sm" style={styles.statusCard}>
-          <Text variant="label" color="secondary">
-            SYSTEM STATUS
-          </Text>
+          <Text variant="label" color="secondary">SYSTEM STATUS</Text>
           <View style={styles.statusRow}>
-            <View style={[styles.statusDot, { backgroundColor: theme.colors.success }]} />
-            <Text variant="body" weight="medium">
+            <CircleCheck size={16} color={theme.colors.success} />
+            <Text variant="body" weight="medium" style={styles.statusText}>
               All systems operational
             </Text>
           </View>
           <Text variant="caption" color="secondary" style={styles.statusHint}>
-            Last sync: just now
+            Connected to ResQDrive cloud
           </Text>
         </Card>
       </ScrollView>
@@ -134,11 +134,8 @@ const styles = StyleSheet.create({
     marginTop: 8,
     marginBottom: 4,
   },
-  statusDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginRight: 8,
+  statusText: {
+    marginLeft: 8,
   },
   statusHint: {
     marginTop: 4,

@@ -4,15 +4,22 @@ import { RootStackParamList } from './types';
 import { AuthStack } from './AuthStack';
 import { MainStack } from './MainStack';
 import { useAppTheme } from '@theme/ThemeContext';
+import { useAuth } from '@hooks/useAuth';
+import { Spinner } from '@components/ui';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export function RootNavigator() {
   const theme = useAppTheme();
-  const isAuthenticated = false;
+  const { isAuthenticated, isInitialized } = useAuth();
+
+  if (!isInitialized) {
+    return <Spinner fullScreen />;
+  }
 
   return (
     <NavigationContainer
+      key={isAuthenticated ? 'main' : 'auth'}
       theme={{
         dark: false,
         colors: {

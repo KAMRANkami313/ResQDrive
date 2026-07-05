@@ -30,7 +30,7 @@
       "@utils/*": [
         "./src/utils/*"
       ],
-      "@types/*": [
+      "@app-types/*": [
         "./src/types/*"
       ],
       "@config/*": [
