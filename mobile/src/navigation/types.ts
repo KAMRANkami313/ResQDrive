@@ -21,6 +21,7 @@ export type MainStackParamList = {
   IoTDebug: undefined;
   DetectionDebug: undefined;
   CrashSoundDebug: undefined;
+  SeverityDebug: undefined;
   EditProfile: undefined;
   ChangePassword: undefined;
   AccountSettings: undefined;
@@ -61,6 +62,7 @@ export type ContactsScreenProps = TabScreenWithStackProps<'Contacts'>;
 export type IoTDebugScreenProps = MainStackScreenProps<'IoTDebug'>;
 export type DetectionDebugScreenProps = MainStackScreenProps<'DetectionDebug'>;
 export type CrashSoundDebugScreenProps = MainStackScreenProps<'CrashSoundDebug'>;
+export type SeverityDebugScreenProps = MainStackScreenProps<'SeverityDebug'>;
 export type EditProfileScreenProps = MainStackScreenProps<'EditProfile'>;
 export type ChangePasswordScreenProps = MainStackScreenProps<'ChangePassword'>;
 export type AccountSettingsScreenProps = MainStackScreenProps<'AccountSettings'>;

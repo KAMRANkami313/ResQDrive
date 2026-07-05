@@ -1,15 +1,25 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { detectionService } from '@services/detection';
 import { DetectionConfig, DetectionResult } from '@services/detection';
+
+const UI_UPDATE_THROTTLE_MS = 500;
 
 export function useDetectionMonitoring(autoStart: boolean = false) {
   const [isMonitoring, setIsMonitoring] = useState(detectionService.isMonitoring());
   const [lastResult, setLastResult] = useState<DetectionResult | null>(null);
   const [suspectedCount, setSuspectedCount] = useState(0);
+  const lastUiUpdateRef = useRef(0);
 
   useEffect(() => {
-    const unsub1 = detectionService.onDetection((r) => setLastResult(r));
+    const unsub1 = detectionService.onDetection((r) => {
+      const now = Date.now();
+      if (now - lastUiUpdateRef.current >= UI_UPDATE_THROTTLE_MS) {
+        lastUiUpdateRef.current = now;
+        setLastResult(r);
+      }
+    });
     const unsub2 = detectionService.onSuspectedAccident((r) => {
+      lastUiUpdateRef.current = Date.now();
       setLastResult(r);
       setSuspectedCount((c) => c + 1);
     });
@@ -51,9 +61,18 @@ export function useDetectionMonitoring(autoStart: boolean = false) {
 
 export function useDetectionResult() {
   const [result, setResult] = useState<DetectionResult | null>(null);
+  const lastUiUpdateRef = useRef(0);
+
   useEffect(() => {
-    const unsub = detectionService.onDetection(setResult);
+    const unsub = detectionService.onDetection((r) => {
+      const now = Date.now();
+      if (now - lastUiUpdateRef.current >= UI_UPDATE_THROTTLE_MS) {
+        lastUiUpdateRef.current = now;
+        setResult(r);
+      }
+    });
     return unsub;
   }, []);
+
   return result;
 }
