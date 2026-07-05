@@ -22,6 +22,9 @@ export type MainStackParamList = {
   EditProfile: undefined;
   ChangePassword: undefined;
   AccountSettings: undefined;
+  AddVehicle: { vehicleId?: string };
+  VehicleDetail: { vehicleId: string };
+  AddContact: { contactId?: string };
 };
 
 export type RootStackParamList = {
@@ -51,7 +54,12 @@ export type TabScreenWithStackProps<Screen extends keyof TabParamList> = Composi
 
 export type HomeScreenProps = TabScreenWithStackProps<'Home'>;
 export type ProfileScreenProps = TabScreenWithStackProps<'Profile'>;
+export type VehiclesScreenProps = TabScreenWithStackProps<'Vehicles'>;
+export type ContactsScreenProps = TabScreenWithStackProps<'Contacts'>;
 export type IoTDebugScreenProps = MainStackScreenProps<'IoTDebug'>;
 export type EditProfileScreenProps = MainStackScreenProps<'EditProfile'>;
 export type ChangePasswordScreenProps = MainStackScreenProps<'ChangePassword'>;
 export type AccountSettingsScreenProps = MainStackScreenProps<'AccountSettings'>;
+export type AddVehicleScreenProps = MainStackScreenProps<'AddVehicle'>;
+export type VehicleDetailScreenProps = MainStackScreenProps<'VehicleDetail'>;
+export type AddContactScreenProps = MainStackScreenProps<'AddContact'>;

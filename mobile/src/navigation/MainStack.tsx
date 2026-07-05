@@ -10,6 +10,9 @@ import { IoTDebugScreen } from '@screens/dev/IoTDebugScreen';
 import { EditProfileScreen } from '@screens/profile/EditProfileScreen';
 import { ChangePasswordScreen } from '@screens/profile/ChangePasswordScreen';
 import { AccountSettingsScreen } from '@screens/profile/AccountSettingsScreen';
+import { AddVehicleScreen } from '@screens/vehicle/AddVehicleScreen';
+import { VehicleDetailScreen } from '@screens/vehicle/VehicleDetailScreen';
+import { AddContactScreen } from '@screens/contacts/AddContactScreen';
 import { useAppTheme } from '@theme/ThemeContext';
 import { Home, Car, Phone, FileText, User } from 'lucide-react-native';
 
@@ -137,6 +140,27 @@ export function MainStack() {
         name="AccountSettings"
         component={AccountSettingsScreen}
         options={{ title: 'Account Settings', headerBackTitle: 'Back' }}
+      />
+      <Stack.Screen
+        name="AddVehicle"
+        component={AddVehicleScreen}
+        options={({ route }) => ({
+          title: route.params?.vehicleId ? 'Edit Vehicle' : 'Add Vehicle',
+          headerBackTitle: 'Back',
+        })}
+      />
+      <Stack.Screen
+        name="VehicleDetail"
+        component={VehicleDetailScreen}
+        options={{ title: 'Vehicle Details', headerBackTitle: 'Back' }}
+      />
+      <Stack.Screen
+        name="AddContact"
+        component={AddContactScreen}
+        options={({ route }) => ({
+          title: route.params?.contactId ? 'Edit Contact' : 'Add Contact',
+          headerBackTitle: 'Back',
+        })}
       />
     </Stack.Navigator>
   );
