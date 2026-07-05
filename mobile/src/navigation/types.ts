@@ -1,3 +1,4 @@
+import { CompositeScreenProps } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 
@@ -15,7 +16,8 @@ export type TabParamList = {
   Profile: undefined;
 };
 
-export type MainStackParamList = TabParamList & {
+export type MainStackParamList = {
+  MainTabs: undefined;
   IoTDebug: undefined;
 };
 
@@ -29,12 +31,19 @@ export type AuthScreenProps<Screen extends keyof AuthStackParamList> = NativeSta
   Screen
 >;
 
-export type MainScreenProps<Screen extends keyof MainStackParamList> = NativeStackScreenProps<
-  MainStackParamList,
-  Screen
->;
-
 export type TabScreenProps<Screen extends keyof TabParamList> = BottomTabScreenProps<
   TabParamList,
   Screen
 >;
+
+export type MainStackScreenProps<Screen extends keyof MainStackParamList> = NativeStackScreenProps<
+  MainStackParamList,
+  Screen
+>;
+
+export type HomeScreenProps = CompositeScreenProps<
+  TabScreenProps<'Home'>,
+  MainStackScreenProps<'MainTabs'>
+>;
+
+export type IoTDebugScreenProps = MainStackScreenProps<'IoTDebug'>;

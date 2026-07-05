@@ -111,7 +111,7 @@ export function MainStack() {
       }}
     >
       <Stack.Screen
-        name="Home"
+        name="MainTabs"
         component={TabNavigator}
         options={{ headerShown: false }}
       />

@@ -2,13 +2,13 @@ import { useEffect, useState, useCallback } from 'react';
 import { View, StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import { Screen, Text, Card, Button, Spinner } from '@components/ui';
 import { useAppTheme } from '@theme/ThemeContext';
-import { MainScreenProps } from '@nav/types';
+import { IoTDebugScreenProps } from '@nav/types';
 import { getIoTService } from '@services/iot';
 import { useIoTStatus, useSensorStream } from '@hooks/useIoT';
 import { ScenarioInfo, SensorReading } from '@services/iot';
 import { Activity, Wifi, WifiOff, Radio, Play, Square, RefreshCw } from 'lucide-react-native';
 
-export function IoTDebugScreen({ navigation }: MainScreenProps<'Home'>) {
+export function IoTDebugScreen(_props: IoTDebugScreenProps) {
   const theme = useAppTheme();
   const status = useIoTStatus();
   const [isSubscribed, setIsSubscribed] = useState(false);
@@ -190,14 +190,6 @@ export function IoTDebugScreen({ navigation }: MainScreenProps<'Home'>) {
             </View>
           )}
         </Card>
-
-        <Button
-          label="Back to Home"
-          variant="ghost"
-          size="md"
-          onPress={() => navigation.navigate('Home')}
-          style={styles.backButton}
-        />
       </ScrollView>
     </Screen>
   );
@@ -290,9 +282,6 @@ const styles = StyleSheet.create({
   },
   scenarioButton: {
     minWidth: 140,
-  },
-  backButton: {
-    marginTop: 16,
   },
   errorText: {
     marginTop: 4,

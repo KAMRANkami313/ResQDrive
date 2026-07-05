@@ -3,10 +3,10 @@ import { Screen, Text, Card, Button } from '@components/ui';
 import { useAppTheme } from '@theme/ThemeContext';
 import { useAuth } from '@hooks/useAuth';
 import { useIoTStatus } from '@hooks/useIoT';
-import { MainScreenProps } from '@nav/types';
+import { HomeScreenProps } from '@nav/types';
 import { Shield, Car, Phone, FileText, ChevronRight, CircleCheck, Activity, Wifi, WifiOff } from 'lucide-react-native';
 
-export function HomeScreen({ navigation }: MainScreenProps<'Home'>) {
+export function HomeScreen({ navigation }: HomeScreenProps) {
   const theme = useAppTheme();
   const { user } = useAuth();
   const iotStatus = useIoTStatus();
