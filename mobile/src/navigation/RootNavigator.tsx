@@ -8,7 +8,8 @@ import { useAuth } from '@hooks/useAuth';
 import { Spinner } from '@components/ui';
 import { CountdownOverlay } from '@components/CountdownOverlay';
 import { SeverityAssessment } from '@services/severity';
-import { Alert } from 'react-native';
+import { alertDispatchService, buildAlertPayload } from '@services/alert';
+import { showAlert } from '@utils/alert';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -16,11 +17,24 @@ export function RootNavigator() {
   const theme = useAppTheme();
   const { isAuthenticated, isInitialized } = useAuth();
 
-  const handleCountdownComplete = (assessment: SeverityAssessment) => {
-    Alert.alert(
-      'Alerts Dispatched (Demo)',
-      `Severity: ${assessment.level.toUpperCase()}\nScore: ${(assessment.score * 100).toFixed(1)}%\n\nIn Batch 3.1, this will trigger multi-channel alert dispatch (push + SMS + email).`,
-    );
+  const handleCountdownComplete = async (assessment: SeverityAssessment) => {
+    try {
+      const payload = await buildAlertPayload(assessment, null);
+      const result = await alertDispatchService.dispatch(payload);
+      const channelSummary = result.channels
+        .map((c) => `${c.channel}: ${c.status}`)
+        .join('\n');
+      showAlert(
+        'Alerts Dispatched',
+        `Severity: ${assessment.level.toUpperCase()}\nScore: ${(assessment.score * 100).toFixed(1)}%\nOverall: ${result.overallStatus.toUpperCase()}\nIncident: ${result.incidentId.slice(0, 8)}...\n\n${channelSummary}`,
+      );
+    } catch (err) {
+      console.error('[countdown] dispatch failed:', err);
+      showAlert(
+        'Dispatch Failed',
+        `Could not dispatch alerts: ${err instanceof Error ? err.message : String(err)}`,
+      );
+    }
   };
 
   const handleCountdownCancel = (reason: string) => {

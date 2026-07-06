@@ -5,6 +5,10 @@ type AppEnv = {
   crashSoundServiceUrl: string;
   damageServiceUrl: string;
   repairCostServiceUrl: string;
+  twilioSid: string;
+  twilioToken: string;
+  twilioFrom: string;
+  brevoApiKey: string;
 };
 
 function getEnv(): AppEnv {
@@ -27,6 +31,10 @@ function getEnv(): AppEnv {
     crashSoundServiceUrl: process.env.EXPO_PUBLIC_CRASH_SOUND_URL || 'http://localhost:8001',
     damageServiceUrl: process.env.EXPO_PUBLIC_DAMAGE_SERVICE_URL || 'http://localhost:8002',
     repairCostServiceUrl: process.env.EXPO_PUBLIC_REPAIR_COST_URL || 'http://localhost:8003',
+    twilioSid: process.env.EXPO_PUBLIC_TWILIO_SID || '',
+    twilioToken: process.env.EXPO_PUBLIC_TWILIO_TOKEN || '',
+    twilioFrom: process.env.EXPO_PUBLIC_TWILIO_FROM || '',
+    brevoApiKey: process.env.EXPO_PUBLIC_BREVO_API_KEY || '',
   };
 }
 

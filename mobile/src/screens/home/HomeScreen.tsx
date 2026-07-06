@@ -4,7 +4,7 @@ import { useAppTheme } from '@theme/ThemeContext';
 import { useAuth } from '@hooks/useAuth';
 import { useIoTStatus } from '@hooks/useIoT';
 import { HomeScreenProps } from '@nav/types';
-import { Shield, Car, Phone, FileText, ChevronRight, CircleCheck, Activity, Wifi, WifiOff, Gauge ,Mic,Zap,Clock} from 'lucide-react-native';
+import { Shield, Car, Phone, FileText, ChevronRight, CircleCheck, Activity, Wifi, WifiOff, Gauge ,Mic,Zap,Clock,Send} from 'lucide-react-native';
 
 export function HomeScreen({ navigation }: HomeScreenProps) {
   const theme = useAppTheme();
@@ -98,7 +98,7 @@ export function HomeScreen({ navigation }: HomeScreenProps) {
               leftIcon={<Zap size={16} color={theme.colors.primary} />}
               style={styles.debugButton}
             />
-                        <Button
+            <Button
               label="Countdown"
               variant="outline"
               size="sm"
@@ -106,6 +106,15 @@ export function HomeScreen({ navigation }: HomeScreenProps) {
               leftIcon={<Clock size={16} color={theme.colors.primary} />}
               style={styles.debugButton}
             />
+            <Button
+              label="Alerts"
+              variant="outline"
+              size="sm"
+              onPress={() => navigation.navigate('AlertDispatchDebug')}
+              leftIcon={<Send size={16} color={theme.colors.primary} />}
+              style={styles.debugButton}
+            />
+
           </View>
         </Card>
 

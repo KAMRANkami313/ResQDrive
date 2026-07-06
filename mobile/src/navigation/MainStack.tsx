@@ -11,6 +11,7 @@ import { DetectionDebugScreen } from '@screens/dev/DetectionDebugScreen';
 import { CrashSoundDebugScreen } from '@screens/dev/CrashSoundDebugScreen';
 import { SeverityDebugScreen } from '@screens/dev/SeverityDebugScreen';
 import { CountdownDebugScreen } from '@screens/dev/CountdownDebugScreen';
+import { AlertDispatchDebugScreen } from '@screens/dev/AlertDispatchDebugScreen';
 import { EditProfileScreen } from '@screens/profile/EditProfileScreen';
 import { ChangePasswordScreen } from '@screens/profile/ChangePasswordScreen';
 import { AccountSettingsScreen } from '@screens/profile/AccountSettingsScreen';
@@ -145,10 +146,15 @@ export function MainStack() {
         component={SeverityDebugScreen}
         options={{ title: 'Severity Engine', headerBackTitle: 'Back' }}
       />
-            <Stack.Screen
+      <Stack.Screen
         name="CountdownDebug"
         component={CountdownDebugScreen}
         options={{ title: 'Countdown Engine', headerBackTitle: 'Back' }}
+      />
+      <Stack.Screen
+        name="AlertDispatchDebug"
+        component={AlertDispatchDebugScreen}
+        options={{ title: 'Alert Dispatch', headerBackTitle: 'Back' }}
       />
       <Stack.Screen
         name="EditProfile"

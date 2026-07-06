@@ -23,6 +23,7 @@ export type MainStackParamList = {
   CrashSoundDebug: undefined;
   SeverityDebug: undefined;
   CountdownDebug: undefined;
+  AlertDispatchDebug: undefined;
   EditProfile: undefined;
   ChangePassword: undefined;
   AccountSettings: undefined;
@@ -65,6 +66,7 @@ export type DetectionDebugScreenProps = MainStackScreenProps<'DetectionDebug'>;
 export type CrashSoundDebugScreenProps = MainStackScreenProps<'CrashSoundDebug'>;
 export type SeverityDebugScreenProps = MainStackScreenProps<'SeverityDebug'>;
 export type CountdownDebugScreenProps = MainStackScreenProps<'CountdownDebug'>;
+export type AlertDispatchDebugScreenProps = MainStackScreenProps<'AlertDispatchDebug'>;
 export type EditProfileScreenProps = MainStackScreenProps<'EditProfile'>;
 export type ChangePasswordScreenProps = MainStackScreenProps<'ChangePassword'>;
 export type AccountSettingsScreenProps = MainStackScreenProps<'AccountSettings'>;
