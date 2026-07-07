@@ -124,6 +124,15 @@ export function HomeScreen({ navigation }: HomeScreenProps) {
               style={styles.debugButton}
             />
 
+            <Button
+              label="Offline"
+              variant="outline"
+              size="sm"
+              onPress={() => navigation.navigate('OfflineFallbackDebug')}
+              leftIcon={<WifiOff size={16} color={theme.colors.primary} />}
+              style={styles.debugButton}
+            />
+
           </View>
         </Card>
 

@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider, useTheme } from '@theme/ThemeContext';
 import { AuthProvider } from '@stores/AuthProvider';
 import { RootNavigator } from '@nav/RootNavigator';
+import { offlineFallbackService } from '@services/offline';
+import { useEffect } from 'react';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -18,6 +20,13 @@ const queryClient = new QueryClient({
 
 function AppInner() {
   const { isDark } = useTheme();
+
+  useEffect(() => {
+    offlineFallbackService.init().catch((err) => {
+      console.warn('[app] offline fallback init failed:', err);
+    });
+  }, []);
+
   return (
     <>
       <StatusBar style={isDark ? 'light' : 'dark'} />

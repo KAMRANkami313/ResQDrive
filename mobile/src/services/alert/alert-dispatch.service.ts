@@ -2,6 +2,7 @@ import { SeverityAssessment } from '@services/severity';
 import { SensorReading } from '@services/iot/types';
 import { useAuthStore } from '@stores/auth.store';
 import { vehicleService } from '@services/vehicle.service';
+import { offlineFallbackService, networkDetector } from '@services/offline';
 import { incidentService } from './incident.service';
 import { PushChannel } from './channels/push-channel';
 import { SmsChannel } from './channels/sms-channel';
@@ -86,7 +87,43 @@ class AlertDispatchService {
       };
       this.notifyChannel(channel.type, initialResults[idx]);
 
-      const result = await channel.send(fullPayload);
+      const isOnline = networkDetector.isOnline();
+      console.log(`[alert-dispatch] channel ${channel.type}, online: ${isOnline}`);
+
+      let result;
+
+      if (isOnline) {
+        result = await channel.send(fullPayload);
+      } else {
+        if (channel.type === 'sms') {
+          console.log('[alert-dispatch] offline — sending SMS via native cellular modem');
+          const nativeResult = await offlineFallbackService.sendNativeSms(fullPayload);
+          result = {
+            channel: 'sms' as const,
+            status: nativeResult.success ? 'delivered' as const : 'failed' as const,
+            attemptedAt: Date.now(),
+            deliveredAt: nativeResult.success ? Date.now() : null,
+            error: nativeResult.error,
+            retryCount: 0,
+            messageId: nativeResult.success ? `native-sms-${Date.now()}` : null,
+          };
+        } else if (channel.type === 'email') {
+          console.log('[alert-dispatch] offline — queuing email for later');
+          const queueId = await offlineFallbackService.queueEmail(fullPayload);
+          result = {
+            channel: 'email' as const,
+            status: 'pending' as const,
+            attemptedAt: Date.now(),
+            deliveredAt: null,
+            error: null,
+            retryCount: 0,
+            messageId: queueId,
+          };
+        } else {
+          result = await channel.send(fullPayload);
+        }
+      }
+
       initialResults[idx] = result;
       this.notifyChannel(channel.type, result);
 

@@ -25,6 +25,7 @@ export type MainStackParamList = {
   CountdownDebug: undefined;
   AlertDispatchDebug: undefined;
   EscalationDebug: undefined;
+  OfflineFallbackDebug: undefined;
   EditProfile: undefined;
   ChangePassword: undefined;
   AccountSettings: undefined;
@@ -75,3 +76,4 @@ export type AddVehicleScreenProps = MainStackScreenProps<'AddVehicle'>;
 export type VehicleDetailScreenProps = MainStackScreenProps<'VehicleDetail'>;
 export type AddContactScreenProps = MainStackScreenProps<'AddContact'>;
 export type EscalationDebugScreenProps = MainStackScreenProps<'EscalationDebug'>;
+export type OfflineFallbackDebugScreenProps = MainStackScreenProps<'OfflineFallbackDebug'>;
