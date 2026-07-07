@@ -30,7 +30,7 @@ export class SmsChannel implements IAlertChannel {
         },
         body: new URLSearchParams({
           From: env.twilioFrom,
-          To: payload.userPhone,
+        To: payload.recipientPhone || payload.userPhone,
           Body: message,
         }).toString(),
       });

@@ -64,6 +64,23 @@ export const incidentService = {
     }
   },
 
+    async updateEscalationStatus(incidentId: string, escalation: Record<string, any>): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from('incidents')
+        .update({ escalation_status: escalation })
+        .eq('id', incidentId);
+      if (error) {
+        console.error('[incident] escalation update error:', error.message);
+        return false;
+      }
+      return true;
+    } catch (err) {
+      console.error('[incident] escalation update exception:', err);
+      return false;
+    }
+  },
+
   async list(): Promise<Incident[]> {
     try {
       const { data, error } = await supabase

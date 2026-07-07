@@ -9,25 +9,39 @@ import { Spinner } from '@components/ui';
 import { CountdownOverlay } from '@components/CountdownOverlay';
 import { SeverityAssessment } from '@services/severity';
 import { alertDispatchService, buildAlertPayload } from '@services/alert';
+import { escalationService } from '@services/escalation';
 import { showAlert } from '@utils/alert';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export function RootNavigator() {
   const theme = useAppTheme();
-  const { isAuthenticated, isInitialized } = useAuth();
+  const { isAuthenticated, isInitialized} = useAuth();
 
   const handleCountdownComplete = async (assessment: SeverityAssessment) => {
     try {
       const payload = await buildAlertPayload(assessment, null);
       const result = await alertDispatchService.dispatch(payload);
+
       const channelSummary = result.channels
         .map((c) => `${c.channel}: ${c.status}`)
         .join('\n');
+
       showAlert(
         'Alerts Dispatched',
-        `Severity: ${assessment.level.toUpperCase()}\nScore: ${(assessment.score * 100).toFixed(1)}%\nOverall: ${result.overallStatus.toUpperCase()}\nIncident: ${result.incidentId.slice(0, 8)}...\n\n${channelSummary}`,
+        `Severity: ${assessment.level.toUpperCase()}\nScore: ${(assessment.score * 100).toFixed(1)}%\nOverall: ${result.overallStatus.toUpperCase()}\nIncident: ${result.incidentId.slice(0, 8)}...\n\n${channelSummary}\n\nEscalating to emergency contacts...`,
       );
+
+      await escalationService.start({
+        incidentId: result.incidentId,
+        severity: assessment,
+        sensorSnapshot: payload.sensorSnapshot,
+        userName: payload.userName,
+        userPhone: payload.userPhone,
+        mapsLink: payload.mapsLink,
+        latitude: payload.latitude,
+        longitude: payload.longitude,
+      });
     } catch (err) {
       console.error('[countdown] dispatch failed:', err);
       showAlert(
@@ -39,6 +53,9 @@ export function RootNavigator() {
 
   const handleCountdownCancel = (reason: string) => {
     console.log('[countdown] cancelled:', reason);
+    if (escalationService.getState().status === 'running') {
+      escalationService.cancel(reason);
+    }
   };
 
   if (!isInitialized) {

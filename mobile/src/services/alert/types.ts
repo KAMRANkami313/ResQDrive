@@ -36,6 +36,10 @@ export interface AlertPayload {
   mapsLink: string | null;
   occurredAt: number;
   sensorSnapshot: SensorReading | null;
+  recipientName?: string;
+  recipientPhone?: string;
+  recipientEmail?: string;
+  ackLink?: string;
 }
 
 export interface AlertDispatchResult {

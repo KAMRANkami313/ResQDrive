@@ -12,6 +12,7 @@ import { CrashSoundDebugScreen } from '@screens/dev/CrashSoundDebugScreen';
 import { SeverityDebugScreen } from '@screens/dev/SeverityDebugScreen';
 import { CountdownDebugScreen } from '@screens/dev/CountdownDebugScreen';
 import { AlertDispatchDebugScreen } from '@screens/dev/AlertDispatchDebugScreen';
+import { EscalationDebugScreen } from '@screens/dev/EscalationDebugScreen';
 import { EditProfileScreen } from '@screens/profile/EditProfileScreen';
 import { ChangePasswordScreen } from '@screens/profile/ChangePasswordScreen';
 import { AccountSettingsScreen } from '@screens/profile/AccountSettingsScreen';
@@ -156,6 +157,13 @@ export function MainStack() {
         component={AlertDispatchDebugScreen}
         options={{ title: 'Alert Dispatch', headerBackTitle: 'Back' }}
       />
+
+      <Stack.Screen
+        name="EscalationDebug"
+        component={EscalationDebugScreen}
+        options={{ title: 'Escalation Engine', headerBackTitle: 'Back' }}
+      />
+      
       <Stack.Screen
         name="EditProfile"
         component={EditProfileScreen}

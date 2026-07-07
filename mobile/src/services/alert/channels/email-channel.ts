@@ -22,15 +22,18 @@ export class EmailChannel implements IAlertChannel {
       }
 
       const subject = `ResQDrive Alert: ${payload.severity.toUpperCase()} accident - ${payload.userName}`;
+      const recipientName = payload.recipientName || 'Emergency Contact';
       const html = `
-        <h2>Emergency Alert</h2>
+        <h2>Emergency Alert from ResQDrive</h2>
+        <p>Dear <strong>${recipientName}</strong>,</p>
         <p><strong>${payload.userName}</strong> may have been in a <strong>${payload.severity}</strong> accident.</p>
         <p><strong>Time:</strong> ${new Date(payload.occurredAt).toLocaleString()}</p>
         <p><strong>Location:</strong> <a href="${payload.mapsLink}">View on Google Maps</a></p>
         <p><strong>Vehicle:</strong> ${payload.vehicleMake || ''} ${payload.vehicleModel || ''} (${payload.vehiclePlate || 'N/A'})</p>
         <p><strong>Severity Score:</strong> ${(payload.severityScore * 100).toFixed(1)}%</p>
+        ${payload.ackLink ? `<p style="margin-top:20px;"><a href="${payload.ackLink}" style="background:#0F4C81;color:#FFFFFF;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;">ACKNOWLEDGE THIS ALERT</a></p>` : ''}
         <hr>
-        <p style="font-size:12px;color:#666;">This is an automated alert from ResQDrive. If this is a false alarm, please contact ${payload.userName} directly.</p>
+        <p style="font-size:12px;color:#666;">If this is a false alarm, please contact ${payload.userName} directly at ${payload.userPhone}. This is an automated alert from ResQDrive.</p>
       `;
 
       const res = await fetch('https://api.brevo.com/v3/smtp/email', {
@@ -41,7 +44,8 @@ export class EmailChannel implements IAlertChannel {
         },
         body: JSON.stringify({
           sender: { name: 'ResQDrive', email: 'alerts@resqdrive.app' },
-          to: [{ email: 'emergency-contact@example.com' }],
+          to: [{ email: payload.recipientEmail || 'emergency-contact@example.com' }],
+          replyTo: { email: 'noreply@resqdrive.app', name: 'ResQDrive' },
           subject,
           htmlContent: html,
         }),
