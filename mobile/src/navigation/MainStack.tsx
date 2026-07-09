@@ -16,6 +16,7 @@ import { EscalationDebugScreen } from '@screens/dev/EscalationDebugScreen';
 import { OfflineFallbackDebugScreen } from '@screens/dev/OfflineFallbackDebugScreen';
 import { LocationShareDebugScreen } from '@screens/dev/LocationShareDebugScreen';
 import { SosDebugScreen } from '@screens/dev/SosDebugScreen';
+import { HospitalScreen } from '@screens/emergency/HospitalScreen';
 import { EditProfileScreen } from '@screens/profile/EditProfileScreen';
 import { ChangePasswordScreen } from '@screens/profile/ChangePasswordScreen';
 import { AccountSettingsScreen } from '@screens/profile/AccountSettingsScreen';
@@ -185,6 +186,11 @@ export function MainStack() {
         options={{ title: 'SOS Engine', headerBackTitle: 'Back' }}
       />
 
+      <Stack.Screen
+        name="Hospital"
+        component={HospitalScreen}
+        options={{ title: 'Nearest Hospitals', headerBackTitle: 'Back' }}
+      />
 
       <Stack.Screen
         name="EditProfile"

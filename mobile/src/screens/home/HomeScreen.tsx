@@ -4,7 +4,7 @@ import { useAppTheme } from '@theme/ThemeContext';
 import { useAuth } from '@hooks/useAuth';
 import { useIoTStatus } from '@hooks/useIoT';
 import { HomeScreenProps } from '@nav/types';
-import { Shield, Car, Phone, FileText, ChevronRight, CircleCheck, Activity, Wifi, WifiOff, Gauge ,Mic,Zap,Clock,Send,Users,MapPin} from 'lucide-react-native';
+import { Shield, Car, Phone, FileText, ChevronRight, CircleCheck, Activity, Wifi, WifiOff, Gauge ,Mic,Zap,Clock,Send,Users,MapPin,Building2} from 'lucide-react-native';
 
 export function HomeScreen({ navigation }: HomeScreenProps) {
   const theme = useAppTheme();
@@ -148,6 +148,15 @@ export function HomeScreen({ navigation }: HomeScreenProps) {
               size="sm"
               onPress={() => navigation.navigate('SosDebug')}
               leftIcon={<Phone size={16} color={theme.colors.emergency} />}
+              style={styles.debugButton}
+            />
+
+                        <Button
+              label="Hospitals"
+              variant="outline"
+              size="sm"
+              onPress={() => navigation.navigate('Hospital')}
+              leftIcon={<Building2 size={16} color={theme.colors.primary} />}
               style={styles.debugButton}
             />
 

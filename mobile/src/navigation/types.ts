@@ -28,6 +28,7 @@ export type MainStackParamList = {
   OfflineFallbackDebug: undefined;
   LocationShareDebug: undefined;
   SosDebug: undefined;
+  Hospital: undefined;
   EditProfile: undefined;
   ChangePassword: undefined;
   AccountSettings: undefined;
@@ -81,3 +82,4 @@ export type EscalationDebugScreenProps = MainStackScreenProps<'EscalationDebug'>
 export type OfflineFallbackDebugScreenProps = MainStackScreenProps<'OfflineFallbackDebug'>;
 export type LocationShareDebugScreenProps = MainStackScreenProps<'LocationShareDebug'>;
 export type SosDebugScreenProps = MainStackScreenProps<'SosDebug'>;
+export type HospitalScreenProps = MainStackScreenProps<'Hospital'>;
