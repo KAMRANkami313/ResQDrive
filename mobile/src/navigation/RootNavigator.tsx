@@ -10,13 +10,14 @@ import { CountdownOverlay } from '@components/CountdownOverlay';
 import { SeverityAssessment } from '@services/severity';
 import { alertDispatchService, buildAlertPayload } from '@services/alert';
 import { escalationService } from '@services/escalation';
+import { locationShareService } from '@services/location-share';
 import { showAlert } from '@utils/alert';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export function RootNavigator() {
   const theme = useAppTheme();
-  const { isAuthenticated, isInitialized} = useAuth();
+  const { isAuthenticated, isInitialized } = useAuth();
 
   const handleCountdownComplete = async (assessment: SeverityAssessment) => {
     try {
@@ -29,10 +30,10 @@ export function RootNavigator() {
 
       showAlert(
         'Alerts Dispatched',
-        `Severity: ${assessment.level.toUpperCase()}\nScore: ${(assessment.score * 100).toFixed(1)}%\nOverall: ${result.overallStatus.toUpperCase()}\nIncident: ${result.incidentId.slice(0, 8)}...\n\n${channelSummary}\n\nEscalating to emergency contacts...`,
+        `Severity: ${assessment.level.toUpperCase()}\nScore: ${(assessment.score * 100).toFixed(1)}%\nOverall: ${result.overallStatus.toUpperCase()}\nIncident: ${result.incidentId.slice(0, 8)}...\n\n${channelSummary}\n\nEscalating to emergency contacts & starting live location share...`,
       );
 
-      await escalationService.start({
+      escalationService.start({
         incidentId: result.incidentId,
         severity: assessment,
         sensorSnapshot: payload.sensorSnapshot,
@@ -42,6 +43,12 @@ export function RootNavigator() {
         latitude: payload.latitude,
         longitude: payload.longitude,
       });
+
+      if (assessment.level === 'moderate' || assessment.level === 'severe') {
+        locationShareService.start(result.incidentId).catch((err) => {
+          console.warn('[countdown] location share failed to start:', err);
+        });
+      }
     } catch (err) {
       console.error('[countdown] dispatch failed:', err);
       showAlert(
@@ -55,6 +62,9 @@ export function RootNavigator() {
     console.log('[countdown] cancelled:', reason);
     if (escalationService.getState().status === 'running') {
       escalationService.cancel(reason);
+    }
+    if (locationShareService.getState().isActive) {
+      locationShareService.stop(`countdown_cancelled: ${reason}`);
     }
   };
 

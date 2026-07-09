@@ -14,6 +14,7 @@ import { CountdownDebugScreen } from '@screens/dev/CountdownDebugScreen';
 import { AlertDispatchDebugScreen } from '@screens/dev/AlertDispatchDebugScreen';
 import { EscalationDebugScreen } from '@screens/dev/EscalationDebugScreen';
 import { OfflineFallbackDebugScreen } from '@screens/dev/OfflineFallbackDebugScreen';
+import { LocationShareDebugScreen } from '@screens/dev/LocationShareDebugScreen';
 import { EditProfileScreen } from '@screens/profile/EditProfileScreen';
 import { ChangePasswordScreen } from '@screens/profile/ChangePasswordScreen';
 import { AccountSettingsScreen } from '@screens/profile/AccountSettingsScreen';
@@ -170,6 +171,12 @@ export function MainStack() {
         component={OfflineFallbackDebugScreen}
         options={{ title: 'Offline Fallback', headerBackTitle: 'Back' }}
       />  
+
+      <Stack.Screen
+        name="LocationShareDebug"
+        component={LocationShareDebugScreen}
+        options={{ title: 'Location Share', headerBackTitle: 'Back' }}
+      />
       
       <Stack.Screen
         name="EditProfile"
