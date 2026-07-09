@@ -142,6 +142,15 @@ export function HomeScreen({ navigation }: HomeScreenProps) {
               style={styles.debugButton}
             />
 
+            <Button
+              label="SOS"
+              variant="outline"
+              size="sm"
+              onPress={() => navigation.navigate('SosDebug')}
+              leftIcon={<Phone size={16} color={theme.colors.emergency} />}
+              style={styles.debugButton}
+            />
+
           </View>
         </Card>
 

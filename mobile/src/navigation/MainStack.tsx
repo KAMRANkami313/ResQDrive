@@ -15,6 +15,7 @@ import { AlertDispatchDebugScreen } from '@screens/dev/AlertDispatchDebugScreen'
 import { EscalationDebugScreen } from '@screens/dev/EscalationDebugScreen';
 import { OfflineFallbackDebugScreen } from '@screens/dev/OfflineFallbackDebugScreen';
 import { LocationShareDebugScreen } from '@screens/dev/LocationShareDebugScreen';
+import { SosDebugScreen } from '@screens/dev/SosDebugScreen';
 import { EditProfileScreen } from '@screens/profile/EditProfileScreen';
 import { ChangePasswordScreen } from '@screens/profile/ChangePasswordScreen';
 import { AccountSettingsScreen } from '@screens/profile/AccountSettingsScreen';
@@ -178,6 +179,13 @@ export function MainStack() {
         options={{ title: 'Location Share', headerBackTitle: 'Back' }}
       />
       
+      <Stack.Screen
+        name="SosDebug"
+        component={SosDebugScreen}
+        options={{ title: 'SOS Engine', headerBackTitle: 'Back' }}
+      />
+
+
       <Stack.Screen
         name="EditProfile"
         component={EditProfileScreen}

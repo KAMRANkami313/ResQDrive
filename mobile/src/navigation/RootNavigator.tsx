@@ -7,10 +7,12 @@ import { useAppTheme } from '@theme/ThemeContext';
 import { useAuth } from '@hooks/useAuth';
 import { Spinner } from '@components/ui';
 import { CountdownOverlay } from '@components/CountdownOverlay';
+import { SosOverlayWrapper } from '@components/SosOverlayWrapper';
 import { SeverityAssessment } from '@services/severity';
 import { alertDispatchService, buildAlertPayload } from '@services/alert';
 import { escalationService } from '@services/escalation';
 import { locationShareService } from '@services/location-share';
+import { sosService } from '@services/sos';
 import { showAlert } from '@utils/alert';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -30,7 +32,7 @@ export function RootNavigator() {
 
       showAlert(
         'Alerts Dispatched',
-        `Severity: ${assessment.level.toUpperCase()}\nScore: ${(assessment.score * 100).toFixed(1)}%\nOverall: ${result.overallStatus.toUpperCase()}\nIncident: ${result.incidentId.slice(0, 8)}...\n\n${channelSummary}\n\nEscalating to emergency contacts & starting live location share...`,
+        `Severity: ${assessment.level.toUpperCase()}\nScore: ${(assessment.score * 100).toFixed(1)}%\nOverall: ${result.overallStatus.toUpperCase()}\nIncident: ${result.incidentId.slice(0, 8)}...\n\n${channelSummary}\n\nEscalating to contacts, sharing location, and activating SOS...`,
       );
 
       escalationService.start({
@@ -46,8 +48,13 @@ export function RootNavigator() {
 
       if (assessment.level === 'moderate' || assessment.level === 'severe') {
         locationShareService.start(result.incidentId).catch((err) => {
-          console.warn('[countdown] location share failed to start:', err);
+          console.warn('[countdown] location share failed:', err);
         });
+
+        const sosLat = payload.latitude ?? 33.6844;
+        const sosLng = payload.longitude ?? 73.0479;
+        console.log('[countdown] activating SOS at:', sosLat, sosLng);
+        sosService.activate(result.incidentId, sosLat, sosLng);
       }
     } catch (err) {
       console.error('[countdown] dispatch failed:', err);
@@ -65,6 +72,9 @@ export function RootNavigator() {
     }
     if (locationShareService.getState().isActive) {
       locationShareService.stop(`countdown_cancelled: ${reason}`);
+    }
+    if (sosService.getState().isActive) {
+      sosService.dismiss();
     }
   };
 
@@ -105,6 +115,8 @@ export function RootNavigator() {
         onComplete={handleCountdownComplete}
         onCancel={handleCountdownCancel}
       />
+
+      <SosOverlayWrapper />
     </NavigationContainer>
   );
 }

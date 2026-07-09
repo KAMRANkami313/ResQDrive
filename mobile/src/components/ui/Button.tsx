@@ -3,6 +3,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   ViewStyle,
+  StyleProp,
   StyleSheet,
   View,
 } from 'react-native';
@@ -27,7 +28,7 @@ interface ButtonProps {
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
   fullWidth?: boolean;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }
 
 export function Button({
